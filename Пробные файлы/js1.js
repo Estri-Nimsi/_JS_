@@ -1,14 +1,12 @@
 "use strict";
 
-function test( arr, func) {
-	for (let i=0; i < arr.length; i++) {
-		arr[i] = func(arr[i]);
+function test(num) {
+	function func(localNum) {
+		num = 2;
 	}
-	return arr;
+	
+	func(num);
+	console.log(num);
 }
 
-let res = test([1, 2, 3], function(num) {
-	return num ** 3;
-});
-
-console.log(res);
+test(1);
