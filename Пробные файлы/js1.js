@@ -10,8 +10,10 @@ function each(arr, callback) {
 	return result;
 }
 
-let result = each([1, 2, 3, 4, 5], function(num) {
-	return num ** 2;
-});
+function cube(num) {
+	return num ** 3;
+}
 
-console.log(result);
+let res = each([1, 2, 3, 4, 5], cube);
+
+console.log(res);
