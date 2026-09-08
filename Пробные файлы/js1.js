@@ -1,7 +1,3 @@
 "use strict";
 
-let result = (function() {
-	return '!';
-});
-
-console.log(result());
+console.log('Привет');
