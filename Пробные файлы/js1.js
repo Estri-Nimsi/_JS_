@@ -1,3 +1,7 @@
 "use strict";
 
-console.log('Привет');
+let str = 'str';
+
+(function() {
+	console.log(1);
+})();
