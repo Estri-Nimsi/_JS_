@@ -1,7 +1,4 @@
 "use strict";
 
-let str = 'str';
-
-(function() {
-	console.log(1);
-})();
+let arr = [...'12345'];
+console.log(arr);
