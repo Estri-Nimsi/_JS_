@@ -1,8 +1,7 @@
 "use strict";
 
-function func(...nums) {
-    return nums.reduce((acc, elem) => acc + elem, 0) / nums.length
-}
+let date = new Date(1991, 12, 9);
+let day  = date.getDay();
+let days = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
 
-let result = func(1, 2, 3);
-console.log(result);
+console.log(days[day]);

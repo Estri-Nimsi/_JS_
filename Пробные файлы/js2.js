@@ -1,20 +1,17 @@
 "use strict";
 
-function func(arr) {
-	for (let elem of arr) {
-		if (typeof elem == 'object') {
-			elem = func(elem);
-		} else {
-			elem = elem + '!';
-		}
+function addZero(num) {
+	if (num >= 0 && num <= 9) {
+		return '0' + num;
+	} else {
+		return num;
 	}
-	
-	return arr;
 }
 
-console.log(func([1, [2, 7, 8], [3, 4, [5, 6]]]));
+let date = new Date();
 
-let myArr = [1, [2, 7, 8], [3, 4, [5, 6]]];
-func(myArr);
-console.log(myArr[0]); // Выведет 1 или '1!'?
-console.log(myArr[1][0]); // Выведет 2 или '2!'?
+console.log(
+	addZero(date.getFullYear()) + '-' + 
+	addZero(date.getMonth() + 1) + '-' +
+	addZero(date.getDate())
+);
