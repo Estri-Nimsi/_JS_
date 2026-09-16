@@ -1,7 +1,10 @@
 "use strict";
 
-let date = new Date(1991, 12, 9);
-let day  = date.getDay();
-let days = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+let date1 = new Date();
+let date2 = new Date(date1.getFullYear(), date1.getMonth(), 15);
 
-console.log(days[day]);
+if (date1 > date2) {
+    console.log('Половина месяца уже прошла');
+} else {
+    console.log('Половина месяца еще не прошла');
+}
