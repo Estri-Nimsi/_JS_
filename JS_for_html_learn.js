@@ -1,10 +1,9 @@
 "use strict"
 
-let elem1 = document.querySelector('#a1');
-let elem2 = document.querySelector('#a2');
+let elem1 = document.querySelector('#elem1');
 
-function func() {
-    elem1.textContent = elem1.textContent + "!";
+elem1.addEventListener('focus', func2);
+
+function func2() {
+    elem1.value = '';
 }
-
-elem2.addEventListener('click', func);
