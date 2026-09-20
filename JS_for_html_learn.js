@@ -1,9 +1,9 @@
 "use strict"
 
-let elem1 = document.querySelector('#elem1');
+let divs = document.querySelectorAll('div');
 
-elem1.addEventListener('focus', func2);
-
-function func2() {
-    elem1.value = '';
+for (let div of divs) {
+	div.addEventListener('click', function () {
+	this.textContent++;
+});
 }
