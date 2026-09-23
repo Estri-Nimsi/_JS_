@@ -1,9 +1,9 @@
 "use strict"
 
-let divs = document.querySelectorAll('div');
+let ps =  document.querySelectorAll('p');
 
-for (let div of divs) {
-	div.addEventListener('click', function () {
-	this.textContent++;
-});
+for (let elem of ps) {
+	elem.addEventListener ('click', function() {
+		this.textContent = (+this.textContent) ** 2
+	})
 }
