@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ввод кода локации</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; text-align: center; padding: 20px; background: #f4f7f6; color: #333; }
+        .card { background: white; max-width: 450px; margin: 30px auto; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(5, 95, 93, 0.1); }
+        h2 { color: #055F5D; margin-top: 0; font-size: 24px; }
+        .point-title { background: rgba(8, 162, 159, 0.12); color: #055F5D; padding: 14px; border-radius: 8px; font-weight: bold; margin-bottom: 25px; font-size: 20px; border: 1px solid rgba(8, 162, 159, 0.25); }
+        input { width: 85%; padding: 15px; font-size: 22px; font-weight: bold; border: 2px solid #ced4da; border-radius: 8px; text-align: center; outline: none; transition: border-color 0.3s; }
+        input:focus { border-color: #08A29F; }
+        
+        /* Кнопка перекрашена в #08A29F */
+        .btn-send { 
+            display: inline-block; 
+            width: 92%; 
+            padding: 16px; 
+            margin-top: 20px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            background: #08A29F; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(8, 162, 159, 0.2); 
+            transition: background 0.2s, transform 0.1s; 
+        }
+        /* При наведении кнопка становится тёмно-зелёной #055F5D */
+        .btn-send:hover { 
+            background: #055F5D; 
+        }
+        .btn-send:active { transform: scale(0.98); }
+        .btn-back { display: inline-block; background: #7f8c8d; margin-top: 25px; padding: 10px 20px; font-size: 14px; color: white; border-radius: 6px; text-decoration: none; }
+        #result { margin-top: 25px; font-weight: bold; font-size: 18px; padding: 15px; border-radius: 8px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>✨ Засчитать баллы</h2>
+        <div class="point-title" id="point-display">Локация: Определение...</div>
+
+        <p style="color: #64748b; margin-bottom: 20px;">Введите ваш личный номер участника с листика:</p>
+        
+        <input type="number" id="user-id-input" placeholder="Например: 1005" pattern="\d*" inputmode="numeric" autocomplete="off">
+        
+        <!-- Кнопка без звёздочки -->
+        <button class="btn-send" onclick="sendCode()">Получить баллы</button>
+
+        <div id="result"></div>
+
+        <br>
+        <a href="index.html" class="btn btn-back">⬅ В личный кабинет</a>
+    </div>
+
+    <script>
+        "use strict";
+        let currentPointKey = "ROBOT";
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pointParam = urlParams.get('point');
+            if (pointParam) currentPointKey = pointParam.toUpperCase();
+            
+            const POINT_NAMES = {
+                'ROBOT': 'Робототехника',
+                'FISICS': 'Занимательная физика',
+                'CHEMISTRY': 'Химическая лаборатория',
+                'PSIH': 'Психология и ЕГЭ',
+                'FDPIP': 'Основы психологии дошкольников'
+            };
+
+            const beautifulName = POINT_NAMES[currentPointKey] || currentPointKey;
+            document.getElementById('point-display').textContent = `Стенд: ${beautifulName}`;
+            document.getElementById('user-id-input').focus();
+        };
+
+        function sendCode() {
+            const userCode = document.getElementById('user-id-input').value.trim();
+            if (!userCode) return alert('Введите ваш номер участника!');
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.background = "#f8fafc";
+            resultDiv.style.color = "#333";
+            resultDiv.innerHTML = "<i>Проверка и начисление...</i>";
+
+            fetch('/api/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userCode: userCode, pointId: currentPointKey })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    resultDiv.style.background = "rgba(8, 162, 159, 0.12)";
+                    resultDiv.style.color = "#055F5D";
+                    resultDiv.innerHTML = `🎉 Отлично! Баллы добавлены.<br><span style="font-size:16px;">Ваш текущий баланс: <b>${data.score} 🌟</b></span>`;
+                    
+                    localStorage.setItem('event_user_code', userCode);
+                } else {
+                    resultDiv.style.background = "#ffebee";
+                    resultDiv.style.color = "#c62828";
+                    resultDiv.innerHTML = `⚠️ ${data.message}`;
+                }
+            })
+            .catch(err => {
+                resultDiv.style.background = "#ffebee";
+                resultDiv.style.color = "#c62828";
+                resultDiv.innerHTML = "❌ Ошибка связи с сервером.";
+            });
+        }
+
+        document.getElementById('user-id-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendCode();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "_js_",
+  "version": "1.0.0",
+  "description": "",
+  "main": "JS_for_html_learn.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Estri-Nimsi/_JS_.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Estri-Nimsi/_JS_/issues"
+  },
+  "homepage": "https://github.com/Estri-Nimsi/_JS_#readme",
+  "devDependencies": {}
+}

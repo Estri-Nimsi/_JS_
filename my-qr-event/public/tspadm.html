@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рейтинг участников</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #055F5D; color: white; margin: 0; padding: 40px 20px; text-align: center; }
+        h1 { color: #D2B772; margin-bottom: 5px; font-size: 36px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .subtitle { color: #e0f2f1; margin-bottom: 40px; font-size: 18px; opacity: 0.8; }
+        .leaderboard-table { width: 100%; max-width: 900px; margin: 0 auto; border-collapse: separate; border-spacing: 0 12px; background: transparent; }
+        .leaderboard-table th { color: #D2B772; padding: 15px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #08A29F; }
+        .leaderboard-table td { padding: 18px; font-size: 20px; color: #333; background: white; transition: transform 0.2s; }
+        
+        /* Скругление углов для строчек карточек */
+        .leaderboard-table td:first-child { border-radius: 10px 0 0 10px; }
+        .leaderboard-table td:last-child { border-radius: 0 10px 10px 0; }
+        
+        /* Стилизация ТОП-3 */
+        .rank-1 td { background-color: #fffde6 !important; font-weight: bold; border: 2px solid #D2B772; color: #6e561c; }
+        .rank-2 td { background-color: #f4f6f7 !important; font-weight: bold; color: #475569; }
+        .rank-3 td { background-color: #fff8f0 !important; font-weight: bold; color: #9c6320; }
+        
+        .badge { display: inline-block; width: 34px; height: 34px; line-height: 34px; border-radius: 50%; background: #e2e8f0; font-weight: bold; color: #333; font-size: 16px; }
+        .rank-1 .badge { background: #D2B772; color: white; box-shadow: 0 2px 6px rgba(210,183,114,0.4); }
+        .rank-2 .badge { background: #adb5bd; color: white; }
+        .rank-3 .badge { background: #e69345; color: white; }
+        
+        .score { font-weight: bold; color: #08A29F; font-size: 24px; }
+        .rank-1 .score { color: #b08d33; font-size: 28px; }
+    </style>
+</head>
+<body>
+
+    <h1>🏆 ТАБЛИЦА ЛИДЕРОВ КВЕСТА</h1>
+    <p class="subtitle">Результаты обновляются автоматически в реальном времени</p>
+
+    <table class="leaderboard-table">
+        <thead>
+            <tr>
+                <th style="width: 100px;">Место</th>
+                <th style="width: 180px;">Номер</th>
+                <th>Участник</th>
+                <th style="width: 150px;">Баллы</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+            <tr>
+                <td colspan="4" style="color: #e0f2f1; background: transparent;">Инициализация таблицы результатов...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        "use strict";
+        function updateLeaderboard() {
+            fetch('/api/leaderboard')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('leaderboard-body');
+                    
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" style="color: #e0f2f1; background: transparent;">Нет зарегистрированных участников</td></tr>`;
+                        return;
+                    }
+
+                    // Отфильтруем тех, у кого больше 0 баллов, чтобы пустые 500 строк не занимали экран
+                    const activeUsers = data.filter(user => user.score > 0);
+
+                    if (activeUsers.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" style="color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.05); border-radius: 10px; padding: 30px;">Пока никто не набрал баллы. Квест начался! 🚀</td></tr>`;
+                        return;
+                    }
+
+                    let rowsHtml = '';
+                    activeUsers.forEach((user, index) => {
+                        const rank = index + 1;
+                        let rowClass = '';
+                        
+                        if (rank === 1) rowClass = 'rank-1';
+                        else if (rank === 2) rowClass = 'rank-2';
+                        else if (rank === 3) rowClass = 'rank-3';
+
+                        rowsHtml += `
+                            <tr class="${rowClass}">
+                                <td><span class="badge">${rank}</span></td>
+                                <td><code>${user.code}</code></td>
+                                <td style="text-align: left; padding-left: 40px;">${user.name}</td>
+                                <td class="score">${user.score}</td>
+                            </tr>
+                        `;
+                    });
+
+                    tbody.innerHTML = rowsHtml;
+                })
+                .catch(err => console.error('Ошибка бэкенда:', err));
+        }
+
+        updateLeaderboard();
+        setInterval(updateLeaderboard, 5000);
+    </script>
+</body>
+</html>

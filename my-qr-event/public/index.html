@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎪 Ваш баланс квеста</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; text-align: center; color: #333; }
+        .card { background: white; max-width: 450px; margin: 30px auto; padding: 0 0 30px 0; border-radius: 16px; box-shadow: 0 10px 25px rgba(5, 95, 93, 0.1); overflow: hidden; }
+        .card-header { background: #055F5D; color: white; padding: 30px 20px; margin-bottom: 25px; }
+        h2 { margin: 0; font-size: 24px; letter-spacing: 0.5px; }
+        p.subtitle { color: #e0f2f1; margin: 8px 0 0 0; font-size: 15px; }
+        .card-body { padding: 0 25px; }
+        input { width: 85%; padding: 14px; font-size: 18px; border: 2px solid #08A29F; border-radius: 8px; outline: none; text-align: center; margin-bottom: 20px; transition: box-shadow 0.3s; }
+        input:focus { box-shadow: 0 0 10px rgba(8, 162, 159, 0.3); }
+        .btn { display: inline-block; width: 92%; padding: 16px; font-size: 18px; font-weight: bold; background: #08A29F; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+        .btn:hover { background: #055F5D; }
+        .btn:active { transform: scale(0.98); }
+        .score-val { font-size: 54px; font-weight: bold; color: #D2B772; margin: 20px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
+        .user-id { background: rgba(210, 183, 114, 0.15); color: #8a7135; padding: 6px 16px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 15px; font-size: 14px; }
+        .points-list { text-align: left; background: #fafdfc; padding: 20px; border-radius: 8px; border: 1px solid #e0f2f1; margin-top: 25px; }
+        .points-list h4 { margin: 0 0 12px 0; color: #055F5D; font-size: 16px; }
+        .points-list ul { margin: 0; padding-left: 20px; color: #475569; line-height: 1.6; }
+        .logout-link { display: inline-block; margin-top: 25px; color: #ef4444; text-decoration: none; font-size: 14px; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-block" class="card">
+        <div class="card-header">
+            <h2>🎪 Квест-Выставка</h2>
+            <p class="subtitle">Личный кабинет участника</p>
+        </div>
+        <div class="card-body">
+            <p style="color: #555; margin-bottom: 20px;">Введите ваш номер с листика, чтобы следить за баллами:</p>
+            <input type="number" id="user-code-input" placeholder="Например: 1005" pattern="\d*" inputmode="numeric">
+            <button class="btn" onclick="login()">Войти</button>
+        </div>
+    </div>
+
+    <div id="cabinet-block" class="card" style="display: none;">
+        <div class="card-header" style="padding: 25px 20px;">
+            <h2 id="welcome-name">Загрузка...</h2>
+        </div>
+        <div class="card-body" style="margin-top: 20px;">
+            <div class="user-id" id="user-code-badge">Участник №...</div>
+            <p style="margin: 0; color: #64748b; font-size: 15px;">Ваш текущий результат:</p>
+            <div class="score-val"><span id="user-score">0</span> 🌟</div>
+            
+            <button class="btn" onclick="checkStatus()">🔄 Обновить баланс</button>
+
+            <div class="points-list" id="history-block" style="display: none;">
+                <h4>Вы успешно прошли локации:</h4>
+                <ul id="scanned-list"></ul>
+            </div>
+            
+            <a href="#" class="logout-link" onclick="logout()">Выйти / Сменить номер</a>
+        </div>
+    </div>
+
+    <script>
+        "use strict";
+        window.onload = function() {
+            const savedCode = localStorage.getItem('event_user_code');
+            if (savedCode) showCabinet(savedCode);
+        };
+
+        function login() {
+            const code = document.getElementById('user-code-input').value.trim();
+            if (!code) return alert('Пожалуйста, введите ваш номер!');
+            
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userCode: code })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem('event_user_code', code);
+                    showCabinet(code);
+                } else {
+                    alert(data.error || 'Ошибка входа');
+                }
+            })
+            .catch(err => alert('Ошибка связи с сервером. Проверьте сеть.'));
+        }
+
+        function showCabinet(code) {
+            document.getElementById('auth-block').style.display = 'none';
+            document.getElementById('cabinet-block').style.display = 'block';
+            document.getElementById('user-code-badge').textContent = `Участник №${code}`;
+            checkStatus();
+            window.refreshInterval = setInterval(checkStatus, 10000);
+        }
+
+        function checkStatus() {
+            const code = localStorage.getItem('event_user_code');
+            if (!code) return;
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userCode: code })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('welcome-name').textContent = data.user.name;
+                    document.getElementById('user-score').textContent = data.user.score;
+
+                    const listElement = document.getElementById('scanned-list');
+                    const historyBlock = document.getElementById('history-block');
+                    listElement.innerHTML = '';
+
+                    if (data.user.scannedPoints && data.user.scannedPoints.length > 0) {
+                        historyBlock.style.display = 'block';
+                        data.user.scannedPoints.forEach(point => {
+                            const li = document.createElement('li');
+                            li.textContent = point;
+                            listElement.appendChild(li);
+                        });
+                    } else {
+                        historyBlock.style.display = 'none';
+                    }
+                }
+            })
+            .catch(err => console.log('Ошибка обновления данных'));
+        }
+
+        function logout() {
+            localStorage.removeItem('event_user_code');
+            clearInterval(window.refreshInterval);
+            document.getElementById('cabinet-block').style.display = 'none';
+            document.getElementById('auth-block').style.display = 'block';
+            document.getElementById('user-code-input').value = '';
+        }
+    </script>
+</body>
+</html>

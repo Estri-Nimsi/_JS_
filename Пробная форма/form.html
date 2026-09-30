@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тестирование операторов</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        .question { margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px; }
+        button { background: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Тест для операторов</h2>
+    
+    <form method="post" action="https://65ptn17t-3000.euw.devtunnels.ms/submit-test">
+        
+        <div class="question">
+            <label><b>Укажите ваше ФИО:</b></label><br><br>
+            <input type="text" name="operator_name" placeholder="Иванов Иван Иванович" style="width: 100%; padding: 8px;" required>
+        </div>
+
+        <!-- Вопрос 1: Одиночный выбор (кружочки), но name="q1[]" -->
+        <div class="question">
+            <p><b>Вопрос 1: Когда начинается приемная кампания?</b></p>
+            <label><input type="radio" name="q1[]" value="A" required> A) 20 января</label><br>
+            <label><input type="radio" name="q1[]" value="B"> B) 20 июня</label><br>
+            <label><input type="radio" name="q1[]" value="C"> C) 1 июня</label>
+        </div>
+
+        <!-- Вопрос 2: Множественный выбор (квадратики), name="q2[]" -->
+        <div class="question">
+            <p><b>Вопрос 2: Какие документы обязан предоставить абитуриент? (Выберите все верные варианты)</b></p>
+            <label><input type="checkbox" name="q2[]" value="A"> A) Трудовую книжку</label><br>
+            <label><input type="checkbox" name="q2[]" value="B"> B) Паспорт гражданина РФ</label><br>
+            <label><input type="checkbox" name="q2[]" value="C"> C) СНИЛС</label><br>
+            <label><input type="checkbox" name="q2[]" value="D"> D) Документ об образовании</label><br>
+        </div>
+
+        <!-- Вопрос 3: Пример нового вопроса с 5 вариантами ответов, три из которых верные -->
+        <div class="question">
+            <p><b>Вопрос 3: Что из перечисленного относится к персональным данным?</b></p>
+            <label><input type="checkbox" name="q3[]" value="A"> A) Номер паспорта</label><br>
+            <label><input type="checkbox" name="q3[]" value="B"> B) ФИО</label><br>
+            <label><input type="checkbox" name="q3[]" value="C"> C) Модель рабочего стула</label><br>
+            <label><input type="checkbox" name="q3[]" value="D"> D) Номер телефона</label><br>
+            <label><input type="checkbox" name="q3[]" value="E"> E) Цвет стен в офисе</label>
+        </div>
+
+        <button type="submit">Завершить тест и отправить результаты</button>
+    </form>
+</body>
+</html>
