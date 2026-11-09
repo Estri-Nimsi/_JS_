@@ -1,9 +1,10 @@
-"use strict"
+"use strict";
 
-let ps =  document.querySelectorAll('p');
+let a = document.querySelectorAll('a');
+let btn = document.querySelector('button');
 
-for (let elem of ps) {
-	elem.addEventListener ('click', function() {
-		this.textContent = (+this.textContent) ** 2
-	})
-}
+btn.addEventListener('click', function() {
+	for (let i = 0; i < a.length; i++) {
+		a[i].textContent +=` (${a[i].href})`;
+	}
+})
